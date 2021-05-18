@@ -18,13 +18,14 @@ func (p *Person) String() string {
 	return "Name: " + p.Name
 }
 
-func main() {
+func testStruct() {
 	p1 := Person{
 		Name:	"pyl",
 		Age:	33,
 	}
-	fmt.Println(p1)
+	fmt.Println(p1.toString())
 	//返回对象指针，相当于p2 := &Person{}
 	p2 := new(Person)
 	p2.Name = "zy"
+	fmt.Println(p2.String())
 }
