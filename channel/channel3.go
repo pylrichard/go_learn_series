@@ -19,8 +19,8 @@ func channel3() {
 		}(i, cancelCh)
 	}
 	//通过channel通知协程取消任务
-	// cancel1(cancelCh)
-	cancel2(cancelCh)
+	cancel1(cancelCh)
+	// cancel2(cancelCh)
 	time.Sleep(time.Second * 2)
 }
 
@@ -41,8 +41,9 @@ func cancel1(cancelCh chan struct{}) {
 		向cancelCh发送一个消息，只有一个协程被取消
 		要通知所有协程取消任务，就需要知道协程总数，然后发送对应条数消息，这会导致代码耦合
 	 */
-	cancelCh <- struct{}{}
-	cancelCh <- struct{}{}
+	for i := 0; i < 2; i++ {
+		cancelCh <- struct{}{}
+	}
 }
 
 func cancel2(cancelCh chan struct{}) {

@@ -28,7 +28,7 @@ func dataProducer1(ch chan int, wg *sync.WaitGroup) {
  */
 func dataProducer2(ch chan int, wg *sync.WaitGroup) {
 	go func() {
-		for i := 0; i < 6; i++ {
+		for i := 0; i < 10; i++ {
 			ch <- i
 		}
 		//发送完毕，关闭channel
@@ -57,7 +57,7 @@ func channel1() {
 	var wg sync.WaitGroup
 	ch := make(chan int)
 	wg.Add(1)
-	//dataProducer1(ch, &wg)
+	// dataProducer1(ch, &wg)
 	dataProducer2(ch, &wg)
 	wg.Add(1)
 	dataReceiver1(ch, &wg)
