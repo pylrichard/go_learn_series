@@ -1,4 +1,4 @@
-package main
+package obj
 
 /*
 	创建/销毁比较消耗资源的对象(比如TCP连接、数据库连接)时，通常需要将这些对象进行池化，以免多次重复创建消耗系统资源
@@ -49,7 +49,7 @@ func (p *objPool) ReleaseObj(obj *reusableObj) error {
 	}
 }
 
-func main() {
+func TestObjPool() {
 	pool := NewObjPool(8)
 	for i := 0; i < 9; i++ {
 		if v, err := pool.GetObj(time.Second * 2); err != nil {
