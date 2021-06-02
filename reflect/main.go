@@ -4,4 +4,6 @@ func main() {
 	CheckType()
 	CheckTypeAndValue()
 	CallMethod()
+	DeepEqual()
+	FillStructByMap()
 }
