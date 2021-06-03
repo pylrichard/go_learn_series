@@ -67,6 +67,9 @@ func unsafe3() {
 			wg.Done()
 		}()
 	}
+	/*
+		写数据的同时读数据
+	 */
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func() {
