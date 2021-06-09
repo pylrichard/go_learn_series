@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	_ "net/http/pprof"
 	"time"
 )
 
@@ -16,6 +17,17 @@ func main() {
 		URL分为两种：
 		末尾包含/：表示一个子树，后面可以跟其他子路径
 		末尾不含/：表示一个叶子路径，固定的路由路径
+
+		开发过程中对代码进行性能检测，而对于线上代码不可能一直输出测试文件，这样会影响到线上业务
+		不过pprof同样提供了线上代码性能测试的方法，通过http请求对线上业务进行一定时长的采样
+
+		使用pprof对线上业务进行性能采样的步骤：
+		1. 导入"net/http/pprof"包，并启动http server
+		2. 通过http://<host>:<port>/debug/pprof访问
+		3. 进行采样获取cpu profile，seconds参数指定采样时长
+			go tool pprof http://<host>:<port>/debug/pprof/profile?seconds=10
+		4. 生成火焰图
+			go tool pprof -http=:8081 ~/pprof/pprof.samples.cpu.001.pb.gz
 	 */
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintf(w, "hello http")
