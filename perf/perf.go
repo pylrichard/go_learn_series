@@ -45,27 +45,21 @@ var goroutineProfile = flag.String("goroutine_profile", "", "write goroutine pro
 	top 查看cpu使用情况
 	list funcName 查看指定函数耗时情况
 	svg 将所有函数运行情况以svg格式输出
-
-
  */
 func main() {
 	flag.Parse()
-	var fileName string
 	if *cpuProfile != "" {
-		fileName = *cpuProfile
-	} else {
-		fileName = "cpu.prof"
+		f, err := os.Create(*cpuProfile)
+		if err != nil {
+			fmt.Println("err create profile:", err)
+		}
+		_ = f.Close()
+		//CPUProfile代码需要放在待测试代码的前面，开启pprof测试
+		if err := pprof.StartCPUProfile(f); err != nil {
+			fmt.Println("err start cpu profile:", err)
+		}
+		defer pprof.StopCPUProfile()
 	}
-	f, err := os.Create(fileName)
-	if err != nil {
-		fmt.Println("err create profile:", err)
-	}
-	defer f.Close()
-	//CPUProfile代码需要放在待测试代码的前面，开启pprof测试
-	if err := pprof.StartCPUProfile(f); err != nil {
-		fmt.Println("err start cpu profile:", err)
-	}
-	defer pprof.StopCPUProfile()
 
 	//内存用量二维数组占用较多
 	arr := [row][col]int{}
@@ -79,33 +73,27 @@ func main() {
 		将pprof信息中的指标导出到profile文件，所以要放在待测试代码的后面执行
 	 */
 	if *memProfile != "" {
-		fileName = *memProfile
-	} else {
-		fileName = "mem.prof"
-	}
-	f, err = os.Create(fileName)
-	if err != nil {
-		fmt.Println("err create mem profile:", err)
-	}
-	defer f.Close()
-	if err = pprof.WriteHeapProfile(f); err != nil {
-		fmt.Println("err write mem profile:", err)
+		f, err := os.Create(*memProfile)
+		if err != nil {
+			fmt.Println("err create mem profile:", err)
+		}
+		_ = f.Close()
+		if err = pprof.WriteHeapProfile(f); err != nil {
+			fmt.Println("err write mem profile:", err)
+		}
 	}
 
 	if *goroutineProfile != "" {
-		fileName = *goroutineProfile
-	} else {
-		fileName = "goroutine.prof"
+		f, err := os.Create(*goroutineProfile)
+		if err != nil {
+			fmt.Println("err create goroutine profile:", err)
+		}
+		//Lookup()传入不同性能flag，导出不同性能指标信息
+		if goProf := pprof.Lookup("goroutine"); goProf == nil {
+			fmt.Println("err write goroutine")
+		} else {
+			_ = goProf.WriteTo(f, 0)
+		}
+		_ = f.Close()
 	}
-	f, err = os.Create(fileName)
-	if err != nil {
-		fmt.Println("err create goroutine profile:", err)
-	}
-	//Lookup()传入不同性能flag，导出不同性能指标信息
-	if goProf := pprof.Lookup("goroutine"); goProf == nil {
-		fmt.Println("err write goroutine")
-	} else {
-		_ = goProf.WriteTo(f, 0)
-	}
-	defer f.Close()
 }
